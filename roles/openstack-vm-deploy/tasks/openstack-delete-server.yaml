@@ -1,0 +1,34 @@
+---
+- name: 'Retrieving assigned IP address from virtual machine for DNS record deletion.'
+  os_server_info:
+    cloud: '{{ osp_cloud }}'
+    server: '{{ osp_vm_server_name }}'
+  register: vm_info
+  when: '"delete_server" in ansible_run_tags'
+  tags:
+    - delete_server
+
+- name: 'Deleting the DNS records in IPA server for the OpenStack virtual machine.'
+  ipa_dnsrecord:
+    ipa_host: '{{ ipa_host }}'
+    ipa_user: '{{ ipa_admin_user }}'
+    ipa_pass: '{{ ipa_admin_passwd }}'
+    zone_name: '{{ ipa_zone_name }}'
+    record_name: '{{ osp_vm_server_name }}'
+    record_value: '{{ item.interface_ip }}'
+    record_type: '{{ ipa_dns_record_type | default("A") }}'
+    state: absent
+  loop: '{{ vm_info.openstack_servers }}' 
+  when: '"delete_server" in ansible_run_tags'
+  no_log: True
+  tags: 
+   - delete_server
+
+- name: 'Deleting the OpenStack virtual machine.'
+  os_server:
+    cloud: '{{ osp_cloud }}' 
+    name: '{{ osp_vm_server_name }}'
+    state: absent
+  when: '"delete_server" in ansible_run_tags'
+  tags:
+    - delete_server

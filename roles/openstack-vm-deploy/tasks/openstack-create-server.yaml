@@ -1,0 +1,38 @@
+---
+- name: 'Creating the OpenStack virtual machine.'
+  os_server:
+    cloud: '{{ osp_cloud }}' 
+    name: '{{ osp_vm_server_name }}'
+    image: '{{ osp_vm_glance_image }}'
+    key_name: '{{ osp_vm_ssh_key }}'
+    flavor: '{{ osp_vm_flavor }}'
+    security_groups: '{{ osp_vm_security_groups }}'
+    network: '{{ osp_vm_neutron_network }}'
+    state: present
+  tags:
+    - create_server
+
+- name: 'Retrieving the Neutron assigned IP address for DNS record creation.'
+  os_server_info:
+    cloud: '{{ osp_cloud }}'
+    server: '{{ osp_vm_server_name }}'
+  register: vm_info
+  tags:
+    - create_server
+
+- name: 'Creating the DNS records in IPA server for this OpenStack virtual machine.'
+  ipa_dnsrecord:
+    ipa_host: '{{ ipa_host }}'
+    ipa_user: '{{ ipa_admin_user }}'
+    ipa_pass: '{{ ipa_admin_passwd }}'
+    zone_name: '{{ ipa_zone_name }}'
+    record_name: '{{ osp_vm_server_name }}'
+    record_value: '{{ item.interface_ip }}'
+    record_type: '{{ ipa_dns_record_type | default("A") }}'
+    state: present
+  loop: '{{ vm_info.openstack_servers }}' 
+  when: create_dns_records == True
+  no_log: True
+  tags: 
+   - create_server
+   - ipa_records

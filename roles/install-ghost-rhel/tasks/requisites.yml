@@ -1,0 +1,66 @@
+---
+- name: Set up the Nginx repo for Centos 7
+  yum_repository:
+    name: nginx
+    description: Centos 8 Nginx Repository
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+    gpgcheck: yes
+    gpgkey: https://nginx.org/keys/nginx_signing.key
+    enabled: yes
+    
+- name: Set up the NodeJS  repo for Centos 7
+  yum_repository:
+    name: nodesource
+    description: Centos 7 NodeJS Repository
+    baseurl: https://rpm.nodesource.com/pub_10.x/el/7/$basearch
+    gpgcheck: no
+    enabled: yes
+
+- name: Update all installed packages
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: is_updated
+
+- name: Reboot after updates
+  shell: sleep 5 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  register: rebooted
+  when:
+    is_updated is changed
+
+- name:  Wait for host to become responsive.
+  wait_for:
+    host: '{{ inventory_hostname }}'
+    port: 22
+    delay: 60
+    timeout: 300
+  delegate_to: localhost
+  when: rebooted is changed
+
+- name: Configure the Ghost platform Pre-Requisites
+  block:
+    - yum:
+        name: '{{ ghost_packages }}'
+        state: latest
+
+    - file:
+        path: /var/www/.well-known/pki-validation
+        state: directory
+        recurse: yes
+        owner: nginx
+        group: nginx
+        mode: 0755
+
+    # This part is optional and is being used for the purpose of 
+    # SSL certificate domain validation 
+    - copy:
+        src: files/D4BEF10500072523716F7EBE67AFBB91.txt
+        dest: /var/www/.well-known/pki-validation/
+        owner: root
+        group: root
+        mode: 0644 
+

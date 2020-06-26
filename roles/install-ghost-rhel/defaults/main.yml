@@ -1,0 +1,36 @@
+---
+# default  vars file for install-ghost
+#
+
+host_fqdn: web.schmengineering.com
+site_fqdn: schmengineering.com
+sudo_group: sudo
+time_servers:
+   - 0.pool.ntp.org
+   - 1.pool.ntp.org
+   - 2.pool.ntp.org
+
+user_list:
+  - { user_name: gizzy, uid: 1010 } 
+
+group_list:
+  - { group_name: sudo, gid: 27 }
+  - { group_name: gizzy, gid: 1010 }
+
+ghost_packages:
+  - mariadb-server
+  - nodejs
+  - nginx
+  - firewalld
+  - MySQL-python
+
+ghost_ports:
+  - { proto: tcp, port: 22 }
+  - { proto: tcp, port: 80 }
+  - { proto: tcp, port: 443 }
+
+ghost_backend_port: 2368
+ghost_user: gizzy
+ghost_group: gizzy
+ghost_db: ghost_blog
+

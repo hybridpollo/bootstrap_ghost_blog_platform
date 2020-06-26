@@ -1,0 +1,32 @@
+---
+- name: 'Configure chrony ntp client'
+  template:
+    src: templates/chrony_server.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0440
+  notify: 
+     - restart_chrony 
+                                                                                                                                                                                              
+- name: 'Ensure base services started'                                                                                                                                                        
+  service:                                                                                                                                                                                    
+    name: '{{ item }}'                                                                                                                                                                        
+    state: started                                                                                                                                                                            
+    enabled: true                                                                                                                                                                             
+  with_items:                                                                                                                                                                                 
+    - chronyd                                                                                                                                                                                 
+    - sshd                                                                                                                                                                                    
+    - firewalld                                                                                                                                                                               
+    - mariadb
+    - nginx
+                                                                                                                                                                                              
+- name: Configuring Firewalld Ports
+  firewalld:                                                                                                                                                                                  
+    zone: public                                                                                                                                                                              
+    port: '{{ item.port }}/{{ item.proto }}'                                                                                                                                                  
+    permanent: yes                                                                                                                                                                            
+    immediate: yes                                                                                                                                                                            
+    state: enabled                                                                                                                                                                            
+  loop: '{{ ghost_ports }}'   
+

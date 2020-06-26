@@ -1,0 +1,29 @@
+---
+# default variables  for openstack-vm-deploy
+#
+
+# cloud used for authentication
+# ~/.config/openstack/clouds.yaml
+osp_cloud: arl_labs
+
+# domain for the virtual machine fqdn
+vm_server_domain: voltron.xyz
+
+# virtual machine details
+osp_vm_server_name: schmengineering-dev
+osp_vm_glance_image: centos-8
+osp_vm_ssh_key: winws-key
+osp_vm_flavor: g.large
+osp_vm_security_groups: default
+osp_vm_neutron_network: external_net
+
+# ipa server details
+# ipa records name and record values
+# are retrieved from the osp_vm_server_name
+# and from the dynamically assigned ip address
+create_dns_records: True
+ipa_host: idm-a.voltron.xyz
+ipa_admin_user: admin
+ipa_admin_passwd: Master450!
+ipa_zone_name: '{{ vm_server_domain }}'
+ipa_dns_record_type: 'A'
