@@ -1,5 +1,5 @@
 ---
-- name: 'Creating the OpenStack virtual machine.'
+- name: 'Creating the OpenStack virtual machine'
   os_server:
     cloud: '{{ osp_cloud }}' 
     name: '{{ osp_vm_server_name }}'
@@ -12,26 +12,31 @@
   tags:
     - create_server
 
-- name: 'Retrieving the Neutron assigned IP address for DNS record creation.'
-  os_server_info:
-    cloud: '{{ osp_cloud }}'
-    server: '{{ osp_vm_server_name }}'
-  register: vm_info
-  tags:
-    - create_server
+- block:
+  - name: 'Fetch virtual machine information for dns record creation'
+    os_server_info:
+      cloud: '{{ osp_cloud }}'
+      server: '{{ osp_vm_server_name }}'
+    register: vm_info
+     
+  - name: 'Setting virtual machine facts'
+    set_fact:
+      osp_vm_name:  '{{ item.name }}'
+      osp_vm_ip_addr: '{{ item.interface_ip }}'
+    no_log: True
+    loop: '{{ vm_info.openstack_servers }}'
 
-- name: 'Creating the DNS records in IPA server for this OpenStack virtual machine.'
+- name: 'Creating the DNS records in IPA server for virtual machine'
   ipa_dnsrecord:
     ipa_host: '{{ ipa_host }}'
     ipa_user: '{{ ipa_admin_user }}'
     ipa_pass: '{{ ipa_admin_passwd }}'
     zone_name: '{{ ipa_zone_name }}'
-    record_name: '{{ osp_vm_server_name }}'
-    record_value: '{{ item.interface_ip }}'
+    record_name: '{{ osp_vm_name }}'
+    record_value: '{{ osp_vm_ip_addr }}'
     record_type: '{{ ipa_dns_record_type | default("A") }}'
     state: present
-  loop: '{{ vm_info.openstack_servers }}' 
-  when: create_dns_records == True
+  when: create_ipa_dns_records == True
   no_log: True
   tags: 
    - create_server

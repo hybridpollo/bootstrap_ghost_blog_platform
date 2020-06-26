@@ -4,8 +4,7 @@ deploy_vm:
     localhost:
       ansible_connection: local
 
-#director:
+#ghost_vm:
 #  hosts:
-#    osp16-dir.voltron.xyz:
+#    schmengineering-dev.voltron.xyz:
 #      ansible_user: root
-#      ansible_host: 172.25.48.10

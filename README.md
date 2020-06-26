@@ -24,7 +24,7 @@ This repository comes with two main playbooks:
 
 Default role variables are located in the 'roles/<role-name>/defaults/main.yaml' file. 
 
-**deploy-openstack-vm**  
+**deploy-openstack-vm**
 
 `osp_cloud` - The name of the OpenStack cloud used to provisioned the virtual machine  
 this is equals to `export OS_CLOUD=<cloud-name>` which references the authentication  
