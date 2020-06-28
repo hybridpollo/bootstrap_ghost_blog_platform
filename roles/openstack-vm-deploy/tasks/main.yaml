@@ -1,5 +1,5 @@
 ---
 # tasks file for openstack-vm-deploy
-- include: openstack-create-server.yaml
 - include: openstack-delete-server.yaml
   when: '"delete_server" in ansible_run_tags'
+- include: openstack-create-server.yaml

@@ -1,4 +1,23 @@
 ---
+- block:
+  - name: 'Check if virtual machine exists prior to deployment'
+    os_server_info:
+      cloud: '{{ osp_cloud }}'
+      server: '{{ osp_vm_server_name }}'
+    register: vm_info
+    tags: create_server
+    
+  - set_fact:
+      osp_vm_state: '{{ item.vm_state }}'
+    no_log: True
+    loop: '{{ vm_info.openstack_servers }}'
+    tags: create_server
+
+  - fail:
+      msg: 'The virtual machine: {{ osp_vm_server_name }} is already running!'
+    when: osp_vm_state is defined and osp_vm_state == "active"  
+    tags: create_server
+
 - name: 'Creating the OpenStack virtual machine'
   os_server:
     cloud: '{{ osp_cloud }}' 
@@ -9,8 +28,7 @@
     security_groups: '{{ osp_vm_security_groups }}'
     network: '{{ osp_vm_neutron_network }}'
     state: present
-  tags:
-    - create_server
+  tags: create_server
 
 - block:
   - name: 'Fetch virtual machine information for dns record creation'
@@ -18,13 +36,16 @@
       cloud: '{{ osp_cloud }}'
       server: '{{ osp_vm_server_name }}'
     register: vm_info
+    tags: create_server
      
   - name: 'Setting virtual machine facts'
     set_fact:
       osp_vm_name:  '{{ item.name }}'
       osp_vm_ip_addr: '{{ item.interface_ip }}'
+      osp_vm_state: '{{ item.vm_state }}'
     no_log: True
     loop: '{{ vm_info.openstack_servers }}'
+    tags: create_server
 
 - name: 'Creating the DNS records in IPA server for virtual machine'
   ipa_dnsrecord:
@@ -36,8 +57,19 @@
     record_value: '{{ osp_vm_ip_addr }}'
     record_type: '{{ ipa_dns_record_type | default("A") }}'
     state: present
-  when: create_ipa_dns_records == True
+  when: create_ipa_dns_records == True and osp_vm_state == "active"
+  register: ipa_registration
   no_log: True
   tags: 
    - create_server
    - ipa_records
+
+- name: 'Post deployment message.'
+  debug:
+    msg: 
+      - 'Deployment of virtual machine successful'
+      - 'Virtual machine: {{ osp_vm_name }}.{{ ipa_zone_name }}'
+      - 'Virtual machine ip: {{ osp_vm_ip_addr }}'
+      - 'Next steps: Prepare the virtual machine for software installation'
+  when: osp_vm_state == "active" and ipa_registration.failed == False
+  tags: create_server

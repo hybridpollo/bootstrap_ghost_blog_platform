@@ -1,6 +1,6 @@
 ---
 - block:
-  - name: 'Fetch virtual machine information for dns record deletion'
+  - name: 'Deleting virtual machine. If tagged'
     os_server_info:
       cloud: '{{ osp_cloud }}'
       server: '{{ osp_vm_server_name }}'
@@ -8,16 +8,25 @@
     when: '"delete_server" in ansible_run_tags'
     tags: delete_server
      
-  - name: 'Setting virtual machine facts'
-    set_fact:
+  - set_fact:
       osp_vm_name: '{{ item.name }}'
       osp_vm_ip_addr: '{{ item.interface_ip }}'
+      osp_vm_state: '{{ item.vm_state }}'
     loop: '{{ vm_info.openstack_servers }}'
     when: '"delete_server" in ansible_run_tags'
     no_log: True
     tags: delete_server
 
-- name: 'Deleting the DNS records in IPA server for the OpenStack virtual machine.'
+
+- name: 'Deleting the OpenStack virtual machine'
+  os_server:
+    cloud: '{{ osp_cloud }}' 
+    name: '{{ osp_vm_name }}'
+    state: absent
+  when: '"delete_server" in ansible_run_tags'
+  tags: delete_server
+
+- name: 'Deleting the DNS records in IPA server for the OpenStack virtual machine'
   ipa_dnsrecord:
     ipa_host: '{{ ipa_host }}'
     ipa_user: '{{ ipa_admin_user }}'
@@ -27,13 +36,5 @@
     record_value: '{{ osp_vm_ip_addr }}'
     record_type: '{{ ipa_dns_record_type | default("A") }}'
     state: absent
-  when: '"delete_server" in ansible_run_tags'
-  tags: delete_server
-
-- name: 'Deleting the OpenStack virtual machine.'
-  os_server:
-    cloud: '{{ osp_cloud }}' 
-    name: '{{ osp_vm_server_name }}'
-    state: absent
-  when: '"delete_server" in ansible_run_tags'
+  when: '"delete_server" in ansible_run_tags and osp_vm_state is defined'
   tags: delete_server
