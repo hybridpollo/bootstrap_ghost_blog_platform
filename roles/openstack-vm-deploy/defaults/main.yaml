@@ -23,9 +23,9 @@ osp_vm_neutron_network: external_net
 # ipa records name and record values
 # are retrieved from the osp_vm_server_name
 # and from the dynamically assigned ip address
+# ipa_admin_user and ipa_admin_password
+# are encrypted in the vault variable file
 create_ipa_dns_records: True
 ipa_host: idm-a.voltron.xyz
-ipa_admin_user: admin
-ipa_admin_passwd: Master450!
 ipa_zone_name: '{{ vm_server_domain }}'
 ipa_dns_record_type: 'A'

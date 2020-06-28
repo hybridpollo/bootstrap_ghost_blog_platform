@@ -4,7 +4,7 @@ deploy_vm:
     localhost:
       ansible_connection: local
 
-#ghost_vm:
-#  hosts:
-#    schmengineering-dev.voltron.xyz:
-#      ansible_user: root
+ghost_vm:
+  hosts:
+    ghostdev.voltron.xyz:
+      ansible_user: root

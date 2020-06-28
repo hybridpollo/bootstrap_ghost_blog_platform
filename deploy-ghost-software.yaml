@@ -1,0 +1,6 @@
+---
+- hosts: ghost_vm
+  vars_files: 
+    - 'vault/certs/{{ site_fqdn }}.yaml'
+  roles:
+    - install-ghost-rhel

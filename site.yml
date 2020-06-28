@@ -1,6 +1,0 @@
----
-- hosts: web.schmengineering.com
-  vars_files: 
-    - 'vault/certs/{{ site_fqdn }}.yml'
-  roles:
-    - install-ghost-rhel

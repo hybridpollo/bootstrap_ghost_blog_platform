@@ -51,7 +51,7 @@
   ipa_dnsrecord:
     ipa_host: '{{ ipa_host }}'
     ipa_user: '{{ ipa_admin_user }}'
-    ipa_pass: '{{ ipa_admin_passwd }}'
+    ipa_pass: '{{ ipa_admin_password }}'
     zone_name: '{{ ipa_zone_name }}'
     record_name: '{{ osp_vm_name }}'
     record_value: '{{ osp_vm_ip_addr }}'
@@ -64,7 +64,7 @@
    - create_server
    - ipa_records
 
-- name: 'Post deployment message.'
+- name: 'Display post deployment message:'
   debug:
     msg: 
       - 'Deployment of virtual machine successful'
