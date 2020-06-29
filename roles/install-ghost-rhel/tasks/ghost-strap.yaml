@@ -1,29 +1,33 @@
 ---
-- name: Create Ghost platform directories 
+- name: 'Creating Ghost platform directories'
   file:
-    path: '/var/www/ghost'
+    path: /var/www/ghost
     mode: 0755
     state: directory
     owner: '{{ ghost_user }}'
     group: '{{ ghost_group }}'
   tags: ghost-strap
 
-- name: Ensure SELinux Policy for Nginx
+- name: 'Ensure SELinux Policy for Nginx'
   seboolean:
     name: httpd_can_network_connect
     state: yes
     persistent: yes
+  tags: ghost-strap
 
-- name: Ensure correct SELinux Context on Web Services Directories
+- name: 'Ensure correct SELinux Context on Web Services Directories'
   sefcontext:
     target: '/var/www/(/.*)?'
     setype: httpd_sys_content_t
     state: present
+  tags: ghost-strap
 
-- name: Apply SELinux file context to filesystem 
-  command: restorecon -irv /var/www
+- name: 'Apply SELinux file context to filesystem'
+  shell: >
+    restorecon -irv /var/www
+  tags: ghost-strap
 
-- name: Ensure base web services started 
+- name: 'Ensure base web services started'
   service:
     name: nginx
     state: started 
@@ -94,16 +98,16 @@
     - localhost
   tags: ghost-strap
 
-- name: 'Copy the SSL certificates for {{ site_fqdn }} to the Nginx location'
-  copy:
-    content: '{{ item.content }}'
-    dest: '{{ item.location }}/{{ item.name }}'
-    owner: root
-    group: root
-    mode: 0644
-  loop: '{{ certificates }}'
-  notify: restart_nginx
-  tags: ghost-strap
+#- name: 'Copy the SSL certificates for {{ ghost_site_fqdn }} to the Nginx location'
+#  copy:
+#    content: '{{ item.content }}'
+#    dest: '{{ item.location }}/{{ item.name }}'
+#    owner: root
+#    group: root
+#    mode: 0644
+#  loop: '{{ certificates }}'
+#  notify: restart_nginx
+#  tags: ghost-strap
 
 - name: 'Set up Ghost Nginx Configuration File'
   template:
@@ -114,7 +118,15 @@
     mode: 0440 
   tags: ghost-strap
 
-- name: ------- BOOSTRAP SUCCESS ----------
+- name: 'Install the ghost-cli via the npm package manager'
+  npm:
+    name: ghost-cli
+    global: yes
+    state: latest
+  tags: ghost-strap
+
+- name: '------- INSTALL SUCCESS ----------'
   debug:
     msg: 'XXXX@@ Congratulations - You are now ready to configure Ghost @@XXXX'
+  when: install_cmd.rc == 0
   tags: ghost-strap

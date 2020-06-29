@@ -8,3 +8,8 @@
   service:
      name: nginx
      state: restarted 
+
+- name: restart_firewalld
+  service:
+     name: firewalld
+     state: restarted 

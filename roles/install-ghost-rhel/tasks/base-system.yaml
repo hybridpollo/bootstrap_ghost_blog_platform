@@ -1,25 +1,27 @@
 ---
-- name: 'Preparing the base host for installation of the Ghost Platform'
-  debug: 
-    msg: ''
+- debug: 
+    msg: 'Preparing the base host for installation of the Ghost Platform'
+  tags: base_system
   
-- name: Set the system hostname
+- name: 'Setting the system hostname'
   hostname:
     name: '{{ host_fqdn }}'
+  tags: base_system
 
-- name: 'Sudo group exists'
+- name: 'Ensure sudo group exists'
   group:
      name: '{{ sudo_group }}'
      state: present
+  tags: base_system
 
-- name: 'Set the root password for the system'
+- name: 'Setting the root password for the system'
   user:
     name: root
     password: '{{ root_pass }}'
     update_password: always
     state: present
 
-- name: 'Set the base users'
+- name: 'Add Linux users to the system'
   user: 
     name: '{{ item.user_name }}'
     uid: '{{ item.uid }}'
@@ -39,7 +41,7 @@
      group: root
      mode: 0750
 
-- name: 'Ensure sudoers file'
+- name: 'Copy sudo file from template'
   template: 
      src: templates/extra_sudo_users.j2
      dest: /etc/sudoers.d/extra-sudo-users

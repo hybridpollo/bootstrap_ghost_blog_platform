@@ -1,6 +1,9 @@
 ---
-- hosts: ghost_vm
-  vars_files: 
-    - 'vault/certs/{{ site_fqdn }}.yaml'
+- name: 'Installing the Ghost software in the configured virtual machine.'
+  hosts: ghost_vm
+  become: yes
+  become_user: root
   roles:
     - install-ghost-rhel
+  vars_files:
+    - vault/encrypted_vars.yaml

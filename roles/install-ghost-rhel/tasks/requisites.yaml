@@ -1,0 +1,46 @@
+---
+- name: 'Set up the Nginx repo for Centos {{ rhel_release_ver }}'
+  yum_repository:
+    name: nginx
+    description: 'Centos {{ rhel_release_ver }} Nginx Repository'
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+    gpgcheck: yes
+    gpgkey: https://nginx.org/keys/nginx_signing.key
+    enabled: yes
+    
+
+- name: 'Configure the NodeJS repositories'
+  shell: >
+    curl -sL '{{ ghost_repo_url }}' | bash -
+
+- name: 'Updating all installed packages'
+  dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: is_updated
+
+- name: 'Reboot after updating'
+  shell: > 
+    sleep 5 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: is_updated is changed
+  tags:
+    - system_updates
+
+- name:  'Wait for host to become responsive'
+  wait_for_connection:
+    connect_timeout: 30
+    sleep: 5
+    delay: 60
+    timeout: 300 
+  when: is_updated is changed
+  tags:
+    - system_updates
+
+- name: 'Configure the Ghost platform Pre-Requisites'
+  yum:
+    name: '{{ ghost_packages }}'
+    state: latest

@@ -17,6 +17,7 @@ osp_vm_flavor: g.small
 osp_vm_security_groups: 
   - default
   - allow_ssh
+  - allow_web
 osp_vm_neutron_network: external_net
 
 # ipa server details

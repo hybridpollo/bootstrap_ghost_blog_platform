@@ -2,35 +2,50 @@
 # default  vars file for install-ghost
 #
 
-host_fqdn: web.schmengineering.com
-site_fqdn: schmengineering.com
+host_fqdn: ghostdev.voltron.xyz
 sudo_group: sudo
+
 time_servers:
-   - 0.pool.ntp.org
-   - 1.pool.ntp.org
-   - 2.pool.ntp.org
+   - clock.nyc.he.net
+   - clock.fmt.he.net
 
 user_list:
   - { user_name: gizzy, uid: 1010 } 
+  - { user_name: berto, uid: 1011 } 
 
 group_list:
   - { group_name: sudo, gid: 27 }
   - { group_name: gizzy, gid: 1010 }
+  - { group_name: berto, gid: 1011 }
 
 ghost_packages:
   - mariadb-server
   - nodejs
   - nginx
   - firewalld
-  - MySQL-python
+  - python3-PyMySQL
 
-ghost_ports:
-  - { proto: tcp, port: 22 }
-  - { proto: tcp, port: 80 }
-  - { proto: tcp, port: 443 }
+ghost_firewall_ports:
+  - proto: tcp
+    port: 22
+  - proto: tcp
+    port: 80
+  - proto: tcp
+    port: 443
 
+# yum repositories parameters
+rhel_release_ver: 8
+custom_yum_repositories:
+  - name: 'Nginx Repository for Centos ${{ rhel_release_ver }}'
+    is_enabled: yes
+    gpg_key: yes
+    base_url: 'http://nginx.org/packages/centos/$releasever/$basearch/'
+    gpg_key_url: 'https://nginx.org/keys/nginx_signing.key'
+
+# Ghost application specific parameters
+ghost_repo_url: 'https://rpm.nodesource.com/setup_12.x'
 ghost_backend_port: 2368
+ghost_site_fqdn: ghostdev.voltron.xyz
 ghost_user: gizzy
 ghost_group: gizzy
 ghost_db: ghost_blog
-

@@ -1,0 +1,6 @@
+---
+# tasks file for install-ghost
+- include: base-system.yaml 
+- include: requisites.yaml
+- include: base-services.yaml
+- include: ghost-strap.yaml

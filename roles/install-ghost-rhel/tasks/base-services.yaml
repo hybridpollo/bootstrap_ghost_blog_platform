@@ -28,5 +28,6 @@
     permanent: yes                                                                                                                                                                            
     immediate: yes                                                                                                                                                                            
     state: enabled                                                                                                                                                                            
-  loop: '{{ ghost_ports }}'   
-
+  loop: '{{ ghost_firewall_ports }}'   
+  notify: 
+    - restart_firewalld

@@ -7,4 +7,4 @@ deploy_vm:
 ghost_vm:
   hosts:
     ghostdev.voltron.xyz:
-      ansible_user: root
+      ansible_user: centos
