@@ -8,7 +8,6 @@
     gpgkey: https://nginx.org/keys/nginx_signing.key
     enabled: yes
     
-
 - name: 'Configure the NodeJS repositories'
   shell: >
     curl -sL '{{ ghost_repo_url }}' | bash -

@@ -8,14 +8,14 @@
     group: '{{ ghost_group }}'
   tags: ghost-strap
 
-- name: 'Ensure SELinux Policy for Nginx'
+- name: 'Ensure SELinux policy for Nginx'
   seboolean:
     name: httpd_can_network_connect
     state: yes
     persistent: yes
   tags: ghost-strap
 
-- name: 'Ensure correct SELinux Context on Web Services Directories'
+- name: 'Ensure correct SELinux context on web services directories'
   sefcontext:
     target: '/var/www/(/.*)?'
     setype: httpd_sys_content_t
@@ -36,7 +36,7 @@
     - mariadb
   tags: ghost-strap
 
-- name: 'Secure MariaDB: Set Root Password to Vaulted Password'
+- name: 'Secure MariaDB: Set Root Password to vaulted password'
   mysql_user: 
     name: root
     password: '{{ root_mysql_pass }}'
@@ -51,7 +51,7 @@
     - localhost
   tags: ghost-strap
 
-- name:  'Secure MariaDB: Remove Root Remote Access'
+- name:  'Secure MariaDB: Remove root remote access'
   mysql_user: 
     name: root
     host: '{{ item }}'
@@ -65,7 +65,7 @@
     - '{{ host_fqdn }}'
   tags: ghost-strap
 
-- name: 'Secure MariaDB: Remove Unused Accounts'
+- name: 'Secure MariaDB: Remove unused accounts'
   mysql_user: 
     name: ''
     host_all: yes
@@ -75,7 +75,7 @@
     login_host: localhost
   tags: ghost-strap
     
-- name: Create the ghost database 
+- name: 'Create the ghost database'
   mysql_db:
     name: '{{ ghost_db }}'
     state: present 
@@ -84,7 +84,7 @@
     login_host: localhost
   tags: ghost-strap
  
-- name: 'Set Password for the Ghost User: {{ ghost_user }}'
+- name: 'Set MySQL password for the Ghost user: {{ ghost_user }}'
   mysql_user: 
     name: '{{ ghost_user }}'
     password: '{{ ghost_mysql_pass }}'
@@ -116,6 +116,7 @@
     owner: root
     group: root
     mode: 0440 
+  notify: restart_nginx
   tags: ghost-strap
 
 - name: 'Install the ghost-cli via the npm package manager'
@@ -128,5 +129,4 @@
 - name: '------- INSTALL SUCCESS ----------'
   debug:
     msg: 'XXXX@@ Congratulations - You are now ready to configure Ghost @@XXXX'
-  when: install_cmd.rc == 0
   tags: ghost-strap
