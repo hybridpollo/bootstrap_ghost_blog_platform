@@ -2,20 +2,17 @@
 # default  vars file for install-ghost
 #
 
+# host specific variables
 host_fqdn: ghostdev.voltron.xyz
-sudo_group: sudo
-
 time_servers:
    - clock.nyc.he.net
    - clock.fmt.he.net
 
+sudo_group_name: sudo
 user_list:
-  - { user_name: gizzy, uid: 1010 } 
-
-group_list:
-  - { group_name: sudo, gid: 27 }
-  - { group_name: gizzy, gid: 1010 }
-
+  - user_name: gizzy
+    user_group: gizzy
+    
 ghost_packages:
   - mariadb-server
   - nodejs

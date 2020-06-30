@@ -10,11 +10,18 @@
 
 - name: 'Ensure sudo group exists'
   group:
-     name: '{{ sudo_group }}'
+     name: '{{ sudo_group_name }}'
      state: present
   tags: base-system
 
-- name: 'Setting the root password for the system'
+- name: 'Add additional user groups to the system'
+  group:
+    name: '{{ item.user_group }}'
+    state: present
+  loop: '{{ user_list }}' 
+  tags: base-system
+
+- name: 'Set the root password for the system'
   user:
     name: root
     password: '{{ root_pass }}'
@@ -25,8 +32,8 @@
 - name: 'Add Linux users to the system'
   user: 
     name: '{{ item.user_name }}'
-    uid: '{{ item.uid }}'
-    groups: '{{ sudo_group }}'
+    group: '{{ item.user_group }}'
+    groups: '{{ sudo_group_name }}'
     append: yes
     shell: /bin/bash
     password: '{{ user_pass }}'
