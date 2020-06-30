@@ -64,6 +64,13 @@
    - create_server
    - ipa_records
 
+- name:  'Wait for virtual machine to become responsive'
+  wait_for:
+    host: '{{ osp_vm_ip_addr }}' 
+    port: 22
+    delay: 60
+  tags: create_server
+
 - name: 'Display post deployment message:'
   debug:
     msg: 

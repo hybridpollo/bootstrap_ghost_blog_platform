@@ -1,0 +1,31 @@
+---
+- name: 'Check for existing Ghost installation'
+  stat: 
+    path: '{{ ghost_install_dir }}/current'
+  register: ginst
+  tags: ghost-install
+
+- name: 'Fail if Ghost installation is present'
+  fail:
+    msg: 'Detected and existing Ghost installation!! Exiting'
+  when: ginst.stat.islnk is defined
+  tags: ghost-install
+
+- name: 'Performing the ghost local installation'
+  shell: >
+    ghost install local --db mysql --dbhost '{{ ghost_db_host}}' --dbuser '{{ ghost_user }}' \
+    --dbpass '{{ ghost_mysql_pass }}' --dbname '{{ ghost_db_name }}' \
+    --url https://'{{ ghost_site_fqdn }}'
+  args:
+    chdir: '{{ ghost_install_dir }}'
+  become_user: '{{ ghost_user }}'
+  tags: ghost-install
+
+- name: '------- INSTALL SUCCESS ----------'
+  debug:
+    msg: 
+      - 'You are now ready to configure Ghost'
+      - 'Open browser to https://{{ ghost_site_fqdn }}/ghost to configure'
+  tags: ghost-strap
+
+

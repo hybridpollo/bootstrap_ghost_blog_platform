@@ -11,12 +11,10 @@ time_servers:
 
 user_list:
   - { user_name: gizzy, uid: 1010 } 
-  - { user_name: berto, uid: 1011 } 
 
 group_list:
   - { group_name: sudo, gid: 27 }
   - { group_name: gizzy, gid: 1010 }
-  - { group_name: berto, gid: 1011 }
 
 ghost_packages:
   - mariadb-server
@@ -43,9 +41,11 @@ custom_yum_repositories:
     gpg_key_url: 'https://nginx.org/keys/nginx_signing.key'
 
 # Ghost application specific parameters
-ghost_repo_url: 'https://rpm.nodesource.com/setup_12.x'
+ghost_node_repo_url: 'https://rpm.nodesource.com/setup_12.x'
 ghost_backend_port: 2368
 ghost_site_fqdn: ghostdev.voltron.xyz
 ghost_user: gizzy
 ghost_group: gizzy
-ghost_db: ghost_blog
+ghost_db_name: ghost_blog
+ghost_db_host: localhost
+ghost_install_dir: /var/www/ghost

@@ -8,6 +8,7 @@
     mode: 0440
   notify: 
      - restart_chrony 
+  tags: base-services
                                                                                                                                                                                               
 - name: 'Ensure base services started'                                                                                                                                                        
   service:                                                                                                                                                                                    
@@ -20,6 +21,7 @@
     - firewalld                                                                                                                                                                               
     - mariadb
     - nginx
+  tags: base-services
                                                                                                                                                                                               
 - name: Configuring Firewalld Ports
   firewalld:                                                                                                                                                                                  
@@ -31,3 +33,4 @@
   loop: '{{ ghost_firewall_ports }}'   
   notify: 
     - restart_firewalld
+  tags: base-services

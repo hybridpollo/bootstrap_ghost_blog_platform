@@ -1,0 +1,8 @@
+---
+# site.yaml includes two main playbooks to perform
+# an end-to-end installation of the Ghost blogging
+# platform on a Red Hat virtual machine provisioned 
+# in OpenStack
+
+- import_playbook: deploy-openstack-vm.yaml
+- import_playbook: deploy-ghost-software.yaml

@@ -1,6 +1,7 @@
 ---
 # tasks file for install-ghost
-- include: base-system.yaml 
-- include: requisites.yaml
-- include: base-services.yaml
-- include: ghost-strap.yaml
+- include: configure-base-system.yaml 
+- include: configure-requisites.yaml
+- include: configure-base-services.yaml
+- include: ghost-install-prepare.yaml
+- include: ghost-install-execute.yaml

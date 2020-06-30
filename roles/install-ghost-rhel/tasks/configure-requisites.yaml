@@ -7,10 +7,12 @@
     gpgcheck: yes
     gpgkey: https://nginx.org/keys/nginx_signing.key
     enabled: yes
+  tags: requisites
     
 - name: 'Configure the NodeJS repositories'
   shell: >
-    curl -sL '{{ ghost_repo_url }}' | bash -
+    curl -sL '{{ ghost_node_repo_url }}' | bash -
+  tags: requisites
 
 - name: 'Updating all installed packages'
   dnf:
@@ -18,6 +20,7 @@
     state: latest
     update_cache: yes
   register: is_updated
+  tags: requisites
 
 - name: 'Reboot after updating'
   shell: > 
@@ -26,8 +29,7 @@
   poll: 0
   ignore_errors: true
   when: is_updated is changed
-  tags:
-    - system_updates
+  tags: requisites
 
 - name:  'Wait for host to become responsive'
   wait_for_connection:
@@ -36,10 +38,10 @@
     delay: 60
     timeout: 300 
   when: is_updated is changed
-  tags:
-    - system_updates
+  tags: requisites
 
 - name: 'Configure the Ghost platform Pre-Requisites'
   yum:
     name: '{{ ghost_packages }}'
     state: latest
+  tags: requisites

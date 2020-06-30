@@ -1,7 +1,7 @@
 ---
-- name: 'Creating Ghost platform directories'
+- name: 'Creating Ghost installation directories'
   file:
-    path: /var/www/ghost
+    path: '{{ ghost_install_dir }}'
     mode: 0755
     state: directory
     owner: '{{ ghost_user }}'
@@ -15,28 +15,19 @@
     persistent: yes
   tags: ghost-strap
 
-- name: 'Ensure correct SELinux context on web services directories'
+- name: 'Ensure correct SELinux context on the /var/www directories' 
   sefcontext:
     target: '/var/www/(/.*)?'
     setype: httpd_sys_content_t
     state: present
   tags: ghost-strap
 
-- name: 'Apply SELinux file context to filesystem'
+- name: 'Apply SELinux file context to the /var/www directory'
   shell: >
     restorecon -irv /var/www
   tags: ghost-strap
 
-- name: 'Ensure base web services started'
-  service:
-    name: nginx
-    state: started 
-  loop:
-    - nginx
-    - mariadb
-  tags: ghost-strap
-
-- name: 'Secure MariaDB: Set Root Password to vaulted password'
+- name: 'Secure MariaDB: Set root password to vaulted password'
   mysql_user: 
     name: root
     password: '{{ root_mysql_pass }}'
@@ -45,7 +36,7 @@
     check_implicit_admin: yes
     login_user: root
     login_password: '{{ root_mysql_pass }}'
-    login_host: localhost
+    login_host: '{{ ghost_db_host }}'
   loop: 
     - 127.0.0.1
     - localhost
@@ -58,7 +49,7 @@
     state: absent
     login_user: root
     login_password: '{{ root_mysql_pass }}'
-    login_host: localhost
+    login_host: '{{ ghost_db_host }}'
   loop: 
     - '%'    
     - '::1'
@@ -72,16 +63,16 @@
     state: absent
     login_user: root
     login_password: '{{ root_mysql_pass }}'
-    login_host: localhost
+    login_host: '{{ ghost_db_host }}'
   tags: ghost-strap
     
 - name: 'Create the ghost database'
   mysql_db:
-    name: '{{ ghost_db }}'
+    name: '{{ ghost_db_name }}'
     state: present 
     login_user: root
     login_password: '{{ root_mysql_pass }}'
-    login_host: localhost
+    login_host: '{{ ghost_db_host }}'
   tags: ghost-strap
  
 - name: 'Set MySQL password for the Ghost user: {{ ghost_user }}'
@@ -90,24 +81,24 @@
     password: '{{ ghost_mysql_pass }}'
     login_user: root
     login_password: '{{ root_mysql_pass }}'
-    login_host: localhost
-    priv: '{{ ghost_db }}.*:ALL'
+    login_host: '{{ ghost_db_host }}'
+    priv: '{{ ghost_db_name }}.*:ALL'
     state: present 
   loop: 
     - 127.0.0.1
     - localhost
   tags: ghost-strap
 
-#- name: 'Copy the SSL certificates for {{ ghost_site_fqdn }} to the Nginx location'
-#  copy:
-#    content: '{{ item.content }}'
-#    dest: '{{ item.location }}/{{ item.name }}'
-#    owner: root
-#    group: root
-#    mode: 0644
-#  loop: '{{ certificates }}'
-#  notify: restart_nginx
-#  tags: ghost-strap
+- name: 'Copy the SSL certificates for {{ ghost_site_fqdn }} to host destination location'
+  copy:
+    content: '{{ item.content }}'
+    dest: '{{ item.location }}/{{ item.name }}'
+    owner: root
+    group: root
+    mode: 0644
+  loop: '{{ certificates }}'
+  notify: restart_nginx
+  tags: ghost-strap
 
 - name: 'Set up Ghost Nginx Configuration File'
   template:
@@ -126,7 +117,11 @@
     state: latest
   tags: ghost-strap
 
-- name: '------- INSTALL SUCCESS ----------'
-  debug:
-    msg: 'XXXX@@ Congratulations - You are now ready to configure Ghost @@XXXX'
+- name: 'Ensure base web services started'
+  service:
+    name: nginx
+    state: started 
+  loop:
+    - nginx
+    - mariadb
   tags: ghost-strap
