@@ -6,26 +6,26 @@
     state: directory
     owner: '{{ ghost_user }}'
     group: '{{ ghost_group }}'
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Ensure SELinux policy for Nginx'
   seboolean:
     name: httpd_can_network_connect
     state: yes
     persistent: yes
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Ensure correct SELinux context on the /var/www directories' 
   sefcontext:
     target: '/var/www/(/.*)?'
     setype: httpd_sys_content_t
     state: present
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Apply SELinux file context to the /var/www directory'
   shell: >
     restorecon -irv /var/www
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Secure MariaDB: Set root password to vaulted password'
   mysql_user: 
@@ -40,7 +40,7 @@
   loop: 
     - 127.0.0.1
     - localhost
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name:  'Secure MariaDB: Remove root remote access'
   mysql_user: 
@@ -54,7 +54,7 @@
     - '%'    
     - '::1'
     - '{{ host_fqdn }}'
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Secure MariaDB: Remove unused accounts'
   mysql_user: 
@@ -64,7 +64,7 @@
     login_user: root
     login_password: '{{ root_mysql_pass }}'
     login_host: '{{ ghost_db_host }}'
-  tags: ghost-strap
+  tags: ghost-prepare
     
 - name: 'Create the ghost database'
   mysql_db:
@@ -73,7 +73,7 @@
     login_user: root
     login_password: '{{ root_mysql_pass }}'
     login_host: '{{ ghost_db_host }}'
-  tags: ghost-strap
+  tags: ghost-prepare
  
 - name: 'Set MySQL password for the Ghost user: {{ ghost_user }}'
   mysql_user: 
@@ -87,7 +87,7 @@
   loop: 
     - 127.0.0.1
     - localhost
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Copy the SSL certificates for {{ ghost_site_fqdn }} to host destination location'
   copy:
@@ -97,10 +97,11 @@
     group: root
     mode: 0644
   loop: '{{ certificates }}'
+  when: ghost_enable_ssl == True
   notify: restart_nginx
-  tags: ghost-strap
+  tags: ghost-prepare
 
-- name: 'Set up Ghost Nginx Configuration File'
+- name: 'Set up Ghost Nginx configuration file'
   template:
     src: templates/nginx_ghost.conf.j2
     dest: /etc/nginx/conf.d/nginx_ghost.conf
@@ -108,14 +109,14 @@
     group: root
     mode: 0440 
   notify: restart_nginx
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Install the ghost-cli via the npm package manager'
   npm:
     name: ghost-cli
     global: yes
     state: latest
-  tags: ghost-strap
+  tags: ghost-prepare
 
 - name: 'Ensure base web services started'
   service:
@@ -124,4 +125,4 @@
   loop:
     - nginx
     - mariadb
-  tags: ghost-strap
+  tags: ghost-prepare

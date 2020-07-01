@@ -19,6 +19,7 @@
   args:
     chdir: '{{ ghost_install_dir }}'
   become_user: '{{ ghost_user }}'
+  notify: restart_nginx
   tags: ghost-install
 
 - name: '------- INSTALL SUCCESS ----------'

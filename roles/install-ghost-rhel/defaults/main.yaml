@@ -21,12 +21,12 @@ ghost_packages:
   - python3-PyMySQL
 
 ghost_firewall_ports:
-  - proto: tcp
-    port: 22
-  - proto: tcp
-    port: 80
-  - proto: tcp
-    port: 443
+  - port: 22
+    proto: tcp
+  - port: 80
+    proto: tcp
+  - port: 443
+    proto: tcp
 
 # yum repositories parameters
 rhel_release_ver: 8
@@ -46,3 +46,4 @@ ghost_group: gizzy
 ghost_db_name: ghost_blog
 ghost_db_host: localhost
 ghost_install_dir: /var/www/ghost
+ghost_enable_ssl: true
