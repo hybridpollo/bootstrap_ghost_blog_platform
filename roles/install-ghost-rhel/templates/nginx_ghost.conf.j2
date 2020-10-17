@@ -6,14 +6,14 @@
 
 server {
     listen 80;
-    server_name {{ ghost_site_fqdn }}; 
+    server_name {{ ghost_site_fqdn }} *.{{ ghost_site_fqdn }} default_server; 
     return 301 https://{{ ghost_site_fqdn }}$request_uri;
     access_log /var/log/nginx/{{ ghost_site_fqdn }}.log;
 }
 
 server {
     listen 443 ssl;
-    server_name {{ ghost_site_fqdn }}; 
+    server_name {{ ghost_site_fqdn }} *.{{ ghost_site_fqdn }} default_server; 
     ssl_certificate /etc/pki/tls/certs/{{ ghost_site_fqdn }}.crt;
     ssl_certificate_key /etc/pki/tls/private/{{ ghost_site_fqdn }}.key; 
     access_log /var/log/nginx/ssl-{{ ghost_site_fqdn }}.log;
@@ -28,11 +28,16 @@ server {
         proxy_buffering off;
         proxy_pass http://127.0.0.1:{{ ghost_backend_port }};
     } 
+
+    # Addition of directory for static content or assets
+    location /static {
+        alias /var/www/static/images;
+    }
 }
 
 {% else %}
 # Use non encrypted conifguration 
-# if ansible parameter ghost_enable_ssl is set to true
+# if ansible parameter ghost_enable_ssl is set to false
 server {
     listen 80;
     server_name {{ ghost_site_fqdn }}; 
@@ -47,6 +52,11 @@ server {
         proxy_buffering off;
         proxy_pass http://127.0.0.1:{{ ghost_backend_port }};
     } 
+    # Addition of directory for static content or assets
+    location /static {
+        alias /var/www/static/images;
+    }
+
 }
 
 {% endif %}

@@ -36,4 +36,6 @@
     record_type: '{{ ipa_dns_record_type | default("A") }}'
     state: absent
   when: '"delete_server" in ansible_run_tags and osp_vm_state is defined'
-  tags: delete_server
+  tags: 
+    - delete_server
+    - ipa_records_delete

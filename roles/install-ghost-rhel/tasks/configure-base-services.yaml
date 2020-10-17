@@ -1,5 +1,5 @@
 ---
-- name: 'Configure chrony ntp client'
+- name: Configuring chrony ntp client
   template:
     src: templates/chrony_server.j2
     dest: /etc/chrony.conf
@@ -9,28 +9,28 @@
   notify: 
      - restart_chrony 
   tags: base-services
-                                                                                                                                                                                              
-- name: 'Ensure base services started'                                                                                                                                                        
-  service:                                                                                                                                                                                    
-    name: '{{ item }}'                                                                                                                                                                        
-    state: started                                                                                                                                                                            
-    enabled: true                                                                                                                                                                             
-  with_items:                                                                                                                                                                                 
-    - chronyd                                                                                                                                                                                 
-    - sshd                                                                                                                                                                                    
-    - firewalld                                                                                                                                                                               
+
+- name: Ensure base services started
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: true
+  with_items:
+    - chronyd
+    - sshd
+    - firewalld
     - mariadb
     - nginx
   tags: base-services
-                                                                                                                                                                                              
+
 - name: Configuring Firewalld Ports
-  firewalld:                                                                                                                                                                                  
-    zone: public                                                                                                                                                                              
-    port: '{{ item.port }}/{{ item.proto }}'                                                                                                                                                  
-    permanent: yes                                                                                                                                                                            
-    immediate: yes                                                                                                                                                                            
-    state: enabled                                                                                                                                                                            
-  loop: '{{ ghost_firewall_ports }}'   
-  notify: 
+  firewalld:
+    zone: public
+    port: '{{ item.port }}/{{ item.proto }}'
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: '{{ ghost_firewall_ports }}'
+  notify:
     - restart_firewalld
   tags: base-services

@@ -1,5 +1,5 @@
 ---
-- name: 'Creating Ghost installation directories'
+- name: Creating Ghost installation directories
   file:
     path: '{{ ghost_install_dir }}'
     mode: 0755
@@ -8,56 +8,56 @@
     group: '{{ ghost_group }}'
   tags: ghost-prepare
 
-- name: 'Ensure SELinux policy for Nginx'
+- name: Ensure SELinux policy for Nginx
   seboolean:
     name: httpd_can_network_connect
     state: yes
     persistent: yes
   tags: ghost-prepare
 
-- name: 'Ensure correct SELinux context on the /var/www directories' 
+- name: Ensure correct SELinux context on the /var/www directories
   sefcontext:
     target: '/var/www/(/.*)?'
     setype: httpd_sys_content_t
     state: present
   tags: ghost-prepare
 
-- name: 'Apply SELinux file context to the /var/www directory'
+- name: Apply SELinux file context to the /var/www directory
   shell: >
     restorecon -irv /var/www
   tags: ghost-prepare
 
-- name: 'Secure MariaDB: Set root password to vaulted password'
-  mysql_user: 
+- name: Secure MariaDB | Set root password to vaulted password
+  mysql_user:
     name: root
     password: '{{ root_mysql_pass }}'
     host: '{{ item }}'
-    state: present 
+    state: present
     check_implicit_admin: yes
     login_user: root
     login_password: '{{ root_mysql_pass }}'
     login_host: '{{ ghost_db_host }}'
-  loop: 
+  loop:
     - 127.0.0.1
     - localhost
   tags: ghost-prepare
 
-- name:  'Secure MariaDB: Remove root remote access'
-  mysql_user: 
+- name: Secure MariaDB | Remove root remote access
+  mysql_user:
     name: root
     host: '{{ item }}'
     state: absent
     login_user: root
     login_password: '{{ root_mysql_pass }}'
     login_host: '{{ ghost_db_host }}'
-  loop: 
-    - '%'    
+  loop:
+    - '%'
     - '::1'
     - '{{ host_fqdn }}'
   tags: ghost-prepare
 
-- name: 'Secure MariaDB: Remove unused accounts'
-  mysql_user: 
+- name: Secure MariaDB | Remove unused accounts
+  mysql_user:
     name: ''
     host_all: yes
     state: absent
@@ -66,7 +66,7 @@
     login_host: '{{ ghost_db_host }}'
   tags: ghost-prepare
     
-- name: 'Create the ghost database'
+- name: Create the ghost database | '{{ ghost_db_name }}'
   mysql_db:
     name: '{{ ghost_db_name }}'
     state: present 
@@ -75,8 +75,8 @@
     login_host: '{{ ghost_db_host }}'
   tags: ghost-prepare
  
-- name: 'Set MySQL password for the Ghost user: {{ ghost_user }}'
-  mysql_user: 
+- name: Set database user  password for the Ghost user | '{{ ghost_user }}'
+  mysql_user:
     name: '{{ ghost_user }}'
     password: '{{ ghost_mysql_pass }}'
     login_user: root
@@ -84,12 +84,12 @@
     login_host: '{{ ghost_db_host }}'
     priv: '{{ ghost_db_name }}.*:ALL'
     state: present 
-  loop: 
+  loop:
     - 127.0.0.1
     - localhost
   tags: ghost-prepare
 
-- name: 'Copy the SSL certificates for {{ ghost_site_fqdn }} to host destination location'
+- name: Copy the SSL certificates for '{{ ghost_site_fqdn }}'
   copy:
     content: '{{ item.content }}'
     dest: '{{ item.location }}/{{ item.name }}'
@@ -101,7 +101,7 @@
   notify: restart_nginx
   tags: ghost-prepare
 
-- name: 'Set up Ghost Nginx configuration file'
+- name: Set up Ghost Nginx configuration file
   template:
     src: templates/nginx_ghost.conf.j2
     dest: /etc/nginx/conf.d/nginx_ghost.conf
@@ -111,14 +111,14 @@
   notify: restart_nginx
   tags: ghost-prepare
 
-- name: 'Install the ghost-cli via the npm package manager'
+- name: Install the ghost-cli via the npm package manager
   npm:
     name: ghost-cli
     global: yes
     state: latest
   tags: ghost-prepare
 
-- name: 'Ensure base web services started'
+- name: Ensure base web services started
   service:
     name: nginx
     state: started 

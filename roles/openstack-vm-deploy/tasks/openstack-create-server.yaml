@@ -62,7 +62,7 @@
   no_log: True
   tags: 
    - create_server
-   - ipa_records
+   - ipa_records_create
 
 - name:  'Wait for virtual machine to become responsive'
   wait_for:

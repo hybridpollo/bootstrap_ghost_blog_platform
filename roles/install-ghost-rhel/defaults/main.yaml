@@ -13,7 +13,7 @@ user_list:
   - user_name: gizzy
     user_group: gizzy
     
-ghost_packages:
+ghost_required_packages:
   - mariadb-server
   - nodejs
   - nginx
@@ -31,9 +31,10 @@ ghost_firewall_ports:
 # yum repositories parameters
 rhel_release_ver: 8
 custom_yum_repositories:
-  - name: 'Nginx Repository for Centos ${{ rhel_release_ver }}'
+  - name: 'Nginx Repo-$releasever'
+    description: 'Nginx Repository for Centos ${{ rhel_release_ver }}'
     is_enabled: yes
-    gpg_key: yes
+    gpg_key_enabled: yes
     base_url: 'http://nginx.org/packages/centos/$releasever/$basearch/'
     gpg_key_url: 'https://nginx.org/keys/nginx_signing.key'
 
