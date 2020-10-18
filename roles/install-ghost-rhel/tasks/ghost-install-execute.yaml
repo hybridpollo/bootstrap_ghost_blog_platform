@@ -20,6 +20,7 @@
     chdir: '{{ ghost_install_dir }}'
   become_user: '{{ ghost_user }}'
   notify: restart_nginx
+  register: did_ghost_install
   tags: ghost-install
 
 - name: ------- INSTALL SUCCESS ----------
@@ -27,6 +28,7 @@
     msg: 
       - 'You are now ready to configure Ghost'
       - 'Open browser to https://{{ ghost_site_fqdn }}/ghost to configure'
+  when: did_ghost_install.rc == 0
   tags: ghost-strap
 
 

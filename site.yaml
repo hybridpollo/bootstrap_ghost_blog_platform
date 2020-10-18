@@ -6,3 +6,4 @@
 
 - import_playbook: deploy-openstack-vm.yaml
 - import_playbook: deploy-ghost-software.yaml
+

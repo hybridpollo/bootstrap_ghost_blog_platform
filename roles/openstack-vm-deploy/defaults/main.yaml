@@ -4,20 +4,20 @@
 
 # cloud used for authentication
 # ~/.config/openstack/clouds.yaml
-osp_cloud: arl_labs
+osp_cloud: dreamhost-iad
 
 # domain for the virtual machine fqdn
-vm_server_domain: voltron.xyz
+vm_server_domain: holaehlo.net
 
 # virtual machine details
-osp_vm_server_name: clusterlabs-svr-c7-02
-osp_vm_glance_image: centos-7
-osp_vm_ssh_key: winws-key
-osp_vm_flavor: g.small
+osp_vm_server_name: ghostdev
+osp_vm_glance_image: centos-8-arl
+osp_vm_ssh_key: win-ws-key
+osp_vm_flavor: gp1.lightspeed
 osp_vm_security_groups: 
-  - default
-  - allow_ssh_web
-osp_vm_neutron_network: external_net
+  - allow_ssh
+  - allow_web
+osp_vm_neutron_network: public
 
 # ipa server details
 # ipa records name and record values

@@ -3,7 +3,7 @@
 #
 
 # host specific variables
-host_fqdn: ghostdev.voltron.xyz
+host_fqdn: blog.holaehlo.net
 time_servers:
    - clock.nyc.he.net
    - clock.fmt.he.net
@@ -41,7 +41,7 @@ custom_yum_repositories:
 # Ghost application specific parameters
 ghost_node_repo_url: 'https://rpm.nodesource.com/setup_12.x'
 ghost_backend_port: 2368
-ghost_site_fqdn: ghostdev.voltron.xyz
+ghost_site_fqdn: blog.holaehlo.net
 ghost_user: gizzy
 ghost_group: gizzy
 ghost_db_name: ghost_blog

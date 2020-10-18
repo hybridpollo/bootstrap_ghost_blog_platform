@@ -6,5 +6,5 @@ deploy_vm:
 
 ghost_vm:
   hosts:
-    ghostdev.voltron.xyz:
+    blog.holaehlo.net:
       ansible_user: centos

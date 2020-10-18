@@ -6,13 +6,15 @@
 
 server {
     listen 80;
-    server_name {{ ghost_site_fqdn }} *.{{ ghost_site_fqdn }} default_server; 
+    listen [::]:80;
+    server_name _;
     return 301 https://{{ ghost_site_fqdn }}$request_uri;
     access_log /var/log/nginx/{{ ghost_site_fqdn }}.log;
 }
 
 server {
     listen 443 ssl;
+    listen [::]:443 ssl;
     server_name {{ ghost_site_fqdn }} *.{{ ghost_site_fqdn }} default_server; 
     ssl_certificate /etc/pki/tls/certs/{{ ghost_site_fqdn }}.crt;
     ssl_certificate_key /etc/pki/tls/private/{{ ghost_site_fqdn }}.key; 
@@ -36,11 +38,12 @@ server {
 }
 
 {% else %}
-# Use non encrypted conifguration 
+# Use non encrypted configuration 
 # if ansible parameter ghost_enable_ssl is set to false
 server {
     listen 80;
-    server_name {{ ghost_site_fqdn }}; 
+    listen [::]:80;
+    server_name _; 
     access_log /var/log/nginx/{{ ghost_site_fqdn }}.log;
     error_log /var/log/nginx/{{ ghost_site_fqdn }}-error.log;
 
@@ -58,5 +61,4 @@ server {
     }
 
 }
-
 {% endif %}
