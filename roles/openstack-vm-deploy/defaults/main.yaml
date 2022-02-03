@@ -7,12 +7,12 @@
 osp_cloud: dreamhost-iad
 
 # domain for the virtual machine fqdn
-vm_server_domain: holaehlo.net
+vm_server_domain: bertoknows.com
 
 # virtual machine details
-osp_vm_server_name: ghostdev
-osp_vm_glance_image: centos-8-arl
-osp_vm_ssh_key: win-ws-key
+osp_vm_server_name: blog
+osp_vm_glance_image: centos-8-stream-arl
+osp_vm_ssh_key: arlaporte-pub-key
 osp_vm_flavor: gp1.lightspeed
 osp_vm_security_groups: 
   - allow_ssh

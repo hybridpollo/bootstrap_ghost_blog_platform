@@ -3,7 +3,7 @@
 #
 
 # host specific variables
-host_fqdn: blog.holaehlo.net
+host_fqdn: blog.bertoknows.com
 time_servers:
    - clock.nyc.he.net
    - clock.fmt.he.net
@@ -39,9 +39,9 @@ custom_yum_repositories:
     gpg_key_url: 'https://nginx.org/keys/nginx_signing.key'
 
 # Ghost application specific parameters
-ghost_node_repo_url: 'https://rpm.nodesource.com/setup_12.x'
+ghost_node_repo_url: 'https://rpm.nodesource.com/setup_14.x'
 ghost_backend_port: 2368
-ghost_site_fqdn: blog.holaehlo.net
+ghost_site_fqdn: blog.bertoknows.com
 ghost_user: gizzy
 ghost_group: gizzy
 ghost_db_name: ghost_blog

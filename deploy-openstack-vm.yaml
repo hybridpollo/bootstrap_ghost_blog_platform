@@ -2,7 +2,6 @@
 - name: '[STARTING Playbook] OpenStack Virtual Machine.'
   hosts: deploy_vm
   vars:
-    ansible_python_interpreter: /home/arlaporte/virtual_environments/ansible_osp_ws/bin/python3
   vars_files:
     - vault/encrypted_vars.yaml
   roles:

@@ -42,7 +42,7 @@
   tags: requisites
 
 - name: Installing the Ghost platform requisite packages
-  yum:
+  dnf:
     name: '{{ ghost_required_packages }}'
     state: latest
   tags: requisites

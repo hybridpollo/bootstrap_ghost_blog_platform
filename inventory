@@ -6,5 +6,5 @@ deploy_vm:
 
 ghost_vm:
   hosts:
-    blog.holaehlo.net:
+    blog.bertoknows.com:
       ansible_user: centos
