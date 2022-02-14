@@ -24,7 +24,7 @@
 - name: Setting the root password for the system
   user:
     name: root
-    password: '{{ root_pass }}'
+    password: '{{ root_pass | password_hash("sha512") }}'
     update_password: always
     state: present
   tags: base-system
@@ -36,7 +36,7 @@
     groups: '{{ sudo_group_name }}'
     append: yes
     shell: /bin/bash
-    password: '{{ user_pass }}'
+    password: '{{ user_pass | password_hash("sha512") }}'
     update_password: always
     state: present 
   loop: '{{ user_list }}'
