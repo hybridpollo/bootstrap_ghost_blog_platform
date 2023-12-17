@@ -7,7 +7,7 @@
 server {
     listen 80;
     listen [::]:80;
-    server_name _;
+    server_name {{ ghost_site_fqdn }};
     return 301 https://{{ ghost_site_fqdn }}$request_uri;
     access_log /var/log/nginx/{{ ghost_site_fqdn }}.log;
 }
@@ -42,7 +42,7 @@ server {
 server {
     listen 80;
     listen [::]:80;
-    server_name _; 
+    server_name {{ host_site_fqdn }}; 
     access_log /var/log/nginx/{{ ghost_site_fqdn }}.log;
     error_log /var/log/nginx/{{ ghost_site_fqdn }}-error.log;
 
